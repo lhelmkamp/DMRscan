@@ -1,0 +1,7 @@
+Package: methdiffSatScan
+Title: Scan statistics for locating differentially methylated regions
+Version: 0.0.0.9000
+Authors@R: person("Laura", "Helmkamp", email = "lhelmkam@med.wayne.edu", role = c("aut", "cre"))
+Description: Finds differentially methylated regions by utilizing the software SatScan.
+License: Artistic-2.0
+LazyData: true
