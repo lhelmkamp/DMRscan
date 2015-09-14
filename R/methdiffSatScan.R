@@ -1,7 +1,7 @@
 
 
 
-#' Find differntially methylated regions using the scan statistic.
+#' Find differentially methylated regions using the scan statistic.
 #'
 #' @param meth input data, a  methylSigData object.
 #' @param mydir a directory into which temporary files can be written.
@@ -15,8 +15,8 @@
 #' @seealso \code{\link{SatScanrun}} which this function wraps, and \code{\link{plotSatScanresult}} which plots the results of this function. \code{\link{plotSatScanresult}} can be called within this function with plotresult=TRUE. 
 #' @export
 #' @examples
-#' result<-methdiffSatScan(meth=meth, mydir=getwd(), xvalues="Index", splitchr=TRUE, splitcentromere=TRUE, build="hg18", smallestregion=4, plotresult=TRUE)
-#' 
+#' result<-methdiffSatScan(meth=meth, mydir=getwd(), xvalues="Index", 
+#' splitchr=TRUE, splitcentromere=TRUE, build="hg18", smallestregion=4, plotresult=TRUE)
 #' 
 
 
@@ -30,7 +30,7 @@ methdiffSatScan <- function(meth, mydir=NULL, xvalues=c("Index", "Position"), sp
   ##################### get the data in the right format
   
   if(class(meth)=="methylSigData"){
-    cat("Data is a methylSigData object.")
+    cat("Data is a methylSigData object.\n")
   }else{
     stop("Data is not in a methylSigData object.  Please see the methylSigReadData function in the methylSig package.  ")
   }
@@ -167,7 +167,7 @@ methdiffSatScan <- function(meth, mydir=NULL, xvalues=c("Index", "Position"), sp
   ##################### 3: not splitting by chromosome or centromere
   if( splitchr==FALSE & splitcentromere==FALSE){
     
-    result<-SatScanrun(meth=meth_chr, xvalues=xvalues, smallestregion=smallestregion, dir=tmpdir)
+    result<-SatScanrun(meth=meth, xvalues=xvalues, smallestregion=smallestregion, dir=tmpdir)
     found<-result$resultmat
     loglik<-result$logliks
     

@@ -2,7 +2,7 @@
 % Please edit documentation in R/methdiffSatScan.R
 \name{methdiffSatScan}
 \alias{methdiffSatScan}
-\title{Find differntially methylated regions using the scan statistic.}
+\title{Find differentially methylated regions using the scan statistic.}
 \usage{
 methdiffSatScan(meth, mydir = NULL, xvalues = c("Index", "Position"),
   splitchr = FALSE, splitcentromere = FALSE, build = c("hg18", "hg19",
@@ -29,10 +29,11 @@ methdiffSatScan(meth, mydir = NULL, xvalues = c("Index", "Position"),
 a list containing matrix of DMR results, as well as other values and parameters which can be passed to plotSatScanresult.
 }
 \description{
-Find differntially methylated regions using the scan statistic.
+Find differentially methylated regions using the scan statistic.
 }
 \examples{
-result<-methdiffSatScan(meth=meth, mydir=getwd(), xvalues="Index", splitchr=TRUE, splitcentromere=TRUE, build="hg18", smallestregion=4, plotresult=TRUE)
+result<-methdiffSatScan(meth=meth, mydir=getwd(), xvalues="Index",
+splitchr=TRUE, splitcentromere=TRUE, build="hg18", smallestregion=4, plotresult=TRUE)
 }
 \seealso{
 \code{\link{SatScanrun}} which this function wraps, and \code{\link{plotSatScanresult}} which plots the results of this function. \code{\link{plotSatScanresult}} can be called within this function with plotresult=TRUE.

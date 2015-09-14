@@ -2,7 +2,7 @@
 % Please edit documentation in R/SatScanrun.R
 \name{SatScanrun}
 \alias{SatScanrun}
-\title{Find differntially methylated regions using the scan statistic.}
+\title{Find differentially methylated regions using the scan statistic.}
 \usage{
 SatScanrun(meth, xvalues = c("Index", "Position"), smallestregion,
   dir = tmpdir)
@@ -22,10 +22,10 @@ SatScanrun(meth, xvalues = c("Index", "Position"), smallestregion,
 a list containing matrix of DMR results, as well as the likelihood values needed for plotting.
 }
 \description{
-Find differntially methylated regions using the scan statistic.
+Find differentially methylated regions using the scan statistic.
 }
 \examples{
-SatScanrun()
+SatScanrun(meth)
 }
 \seealso{
 \code{\link{methdiffSatScan}} wraps this function, and allows its use on data with multiple chromosomes.

@@ -72,7 +72,7 @@ plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL){
   
   
   ######## promoters from genes
-  my.promoters<-trim(promoters(downloadgenes, upstream=2000, downstream=200), use.names=TRUE)
+  my.promoters<-trim(suppressWarnings(promoters(downloadgenes, upstream=2000, downstream=200)), use.names=TRUE)
   
   DMRs$chrnum<-as.numeric(gsub("chr", "", DMRs$chr))
   RSatScanDMRs.order<-with(DMRs, DMRs[order(chrnum, pos.start),])
@@ -106,7 +106,11 @@ plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL){
     
     #TranscriptDB does not have symbols?
     library("org.Hs.eg.db")
-    symbols <- unlist(mapIds(org.Hs.eg.db, gene(grtrack), "SYMBOL", "ENTREZID", multiVals = "first"))
+    symbols <- suppressWarnings(unlist(mapIds(org.Hs.eg.db, gene(grtrack), "SYMBOL", "ENTREZID", multiVals = "first")))
+    
+    
+    
+    
     a<-symbol(grtrack)
     b<-gene(grtrack)
     c<-symbols[gene(grtrack)]
@@ -197,7 +201,7 @@ plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL){
       )
       }
       if(ucgeneind>0){
-        plotTracks(list(itrack,  atrack, dtrack, grtrack, nameTrack,  ptrack, CpGtrack ), from=plotstart-5000, to=plotstop+1000, geneSymbols = FALSE,
+        plotTracks(list(itrack,  atrack, dtrack, grtrack, nameTrack,  ptrack, CpGtrack ), from=plotstart, to=plotstop, geneSymbols = FALSE,
                    fontsize=15, type = "histogram", 
                   main=paste(RSatScanDMR$chr, ":",RSatScanDMR$pos.start, "-",RSatScanDMR$pos.stop), 
                    cex.main=0.75  

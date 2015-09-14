@@ -1,5 +1,5 @@
 
-#' Find differntially methylated regions using the scan statistic.
+#' Find differentially methylated regions using the scan statistic.
 #'
 #' @param meth input data, a  methylSigData object.
 #' @param xvalues either "Index" to use the position values associated with the data, or "Index" to treat the data points as equally spaced along the chromosome.
@@ -10,7 +10,7 @@
 #' @seealso \code{\link{methdiffSatScan}} wraps this function, and allows its use on data with multiple chromosomes.  
 #' @export
 #' @examples
-#' SatScanrun()
+#' SatScanrun(meth)
 #' 
 #' 
 #' 

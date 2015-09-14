@@ -5,3 +5,10 @@ Authors@R: person("Laura", "Helmkamp", email = "lhelmkam@med.wayne.edu", role = 
 Description: Finds differentially methylated regions by utilizing the software SatScan.
 License: Artistic-2.0
 LazyData: true
+Imports: rtracklayer,
+    GenomicFeatures,
+    Gviz,
+    rsatscan,
+    methylSig,
+    GWASTools,
+    org.Hs.eg.db
