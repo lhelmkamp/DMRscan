@@ -2,7 +2,7 @@
 title: "methdiffSatScan vignette"
 author: "Laura Helmkamp"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{methdiffSatScan}
   %\VignetteEngine{knitr::rmarkdown}

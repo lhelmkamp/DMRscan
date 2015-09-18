@@ -12,5 +12,5 @@ Imports: rtracklayer,
     methylSig,
     GWASTools,
     org.Hs.eg.db
-Suggests: knitr
-VignetteBuilder: knitr
+Suggests: R.rsp
+VignetteBuilder: R.rsp
