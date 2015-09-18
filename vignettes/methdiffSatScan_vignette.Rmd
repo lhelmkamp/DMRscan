@@ -1,0 +1,328 @@
+---
+title: "methdiffSatScan vignette"
+author: "Laura Helmkamp"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{methdiffSatScan}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+1: Introduction
+----------------------------------------------------------------------
+
+DNA methylation plays critical roles in gene regulation and cellular specification without altering DNA
+sequences. It is one of the best understood and most intensively studied epigenetic marks in mammalian
+cells. Treatment of DNA with sodium bisulfite deaminates unmethylated cytosines to uracil while methylated cytosines are resistant to this conversion thus allowing for the discrimination between methylated and unmethylated CpG sites. Sodium bisulfite pre-treatment of DNA coupled with next-generation sequencing has allowed DNA methylation to be studied quantitatively and genome-wide at single cytosine site resolution. - change this; taken from MethylSig
+
+The **methdiffSatScan** package allows users to find differentially methylated regions (DMRs) using the scan statistic.  **methdiffSatScan** constitutes a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package **methylSig**,  the free scan statistic software **SaTScan** (via **RSaTScan**), and the plotting capabilities of Gviz [1,2,3,4].
+
+This document is a step-by-step user guide for the methdiffSatScan package.
+
+
+
+2: Installation
+----------------------------------------------------------------------
+
+
+### 2a: Installing methdiffSatScan ###
+
+Install **methdiffSatScan** with the devtools R package:
+
+```{r, message=F, warning=F}
+library(devtools) 
+install_github('lhelmkamp/methdiffSatScan')
+```
+
+
+### 2b: Installing SaTScan ###
+
+**methdiffSatScan** requires the stand-alone software **SaTScan**.  This can be easily downloaded from http://www.satscan.org/download.html for Windows, Linux, or Mac OS X.   
+
+
+
+
+3: Sample data and data class
+----------------------------------------------------------------------
+
+As sample data, we use a small portion of the sample data publicly available on the GEO database under accession number GSE61161.  Data was obtained from 39 patients with chronic myelomonocytic leukemia (CMML), and we are interested in locating regions which could predict response to a commonly used treatment.  Data for chromosome 18 is provided with the package. 
+
+```{r, message=F, warning=F}
+library(methdiffSatScan) 
+data(CMML_chr18)
+CMML_chr18
+
+```
+
+**methdiffSatScan** requires that input data be formatted as methylSigData object, as is output from the methylSigReadData() function in the methylSig package.  If your data is not in this format, please see the Appendix.   
+
+
+4: Finding DMRs with methdiffSatScan
+----------------------------------------------------------------------
+
+With data in a methylSigData object, the function **methdiffSatScan()** can be used to find DMRs.  methdiffSatScan performs the following steps:
+
+1. Obtain sitewise likelihood ratio statistics
+2. Normalize the sitewise statistics using quantiles
+3. Write the files needed by SatScan to a local directory 
+4. Run SatScan and view the results
+
+We start with a simple call to **methdiffSatScan()** for the chromosome 18 data:
+
+
+```{r, message=F, warning=F, results="hide"}
+time0.a<-proc.time()
+result.a<-methdiffSatScan(CMML_chr18, xvalues = "Index")
+time1.a<-proc.time()
+
+```
+
+Here, `xvalues = "Index"` indicates that in the scan statistic, the data points will be treated as equally spaced rather than using the position of the site on the chromosome.  We include timing code to allow the user to compare computational speed:
+
+```{r, message=T, warning=F}
+(time1.a-time0.a)/60
+```
+
+On our computer, where chromosome 18 takes about 13 minutes, analyzing the entire genome-wide dataset for the CMML data takes about 16 hours.
+
+The output `result.a` is a list, the first element of which contains the significant DMRs:
+
+```{r, message=T, warning=F, results="hide"}
+result.a$DMRs
+```
+```{r, echo=F}
+result.a$DMRs[,c(1:7, 11)]
+```
+
+Note that the result is also automatically output to `result`; we output the result as a precaution due to the long computational time of **methdiffSatScan** on large datasets.  However, we recommend returning output to a more desciptive name as well, as `result` will be overwritten by subsequent calls to **methdiffSatScan**.
+
+
+If multiple chromosomes are present in the input `meth` object, **methdiffSatScan** will automatically analyze each chhromsome separately.  For human data, the user can also split each chromsome at the centromere with `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets depending on system memory.
+
+```{r, message=F, warning=F, results="hide"}
+library(methdiffSatScan) 
+time0.b<-proc.time()
+result.b<-methdiffSatScan(CMML_chr18, xvalues = "Index", splitchr = TRUE, splitcentromere = TRUE, build = "hg18")
+time1.b<-proc.time()
+
+```
+
+```{r, message=T, warning=F}
+(time1.b-time0.b)/60
+```
+
+Comparing these new results to those obtained previously:
+
+```{r, message=T, warning=F, results="hide"}
+result.b$DMRs
+```
+```{r, echo=F}
+result.b$DMRs[,c(1:7, 11)]
+```
+
+we note that the same number of regions was found, and the bounds of these regions are largely the same. However, the results have changed slightly. This is to expected, as SaTScan finds regions by minimizing the total variance of the data, and what we have specified as the "full" data has changed.
+
+
+5: DMR visualization
+----------------------------------------------------------------------
+
+We can now visualize the significant regions with the function **plotSatScanresult**. The results will be output to a pdf in `mydir`, if this was specified, or in the current working directory. The options `plottopn` and `plotpval` can be used to restrict plotting to the top few results by p-value or to results with a specified p-value more conservative than 0.05, respectively.  The default is to plot all the significant results returned by **plotSatScanresult**.  Alternatively, plots can also be output directly from the call to **plotSatScanresult** by specifying `plotresult=TRUE`.
+
+
+```{r, eval=FALSE}
+plotSatScanresult(result.b) 
+```
+
+For example the first region:
+
+```{r, include=FALSE}
+result.plot<-result.b
+result.plot$DMRs<-result.b$DMRs[7,]
+
+
+#plotSatScanresult(result.plot) 
+
+####################################### plot in window #################################
+########## resume with the function
+likelihoods<-result$likelihoods
+build<-result$build
+dir<-result$dir
+DMRs<-result.plot$DMRs
+
+library(rtracklayer)
+library("GenomicFeatures")
+library("Gviz")
+
+
+downloadgenes<-makeTxDbFromUCSC( # this is a TxDb object, which is easy to plot with Gviz.
+  genome=build,
+  tablename="knownGene",
+  transcript_ids=NULL,
+  circ_seqs=DEFAULT_CIRC_SEQS,
+  url="http://genome.ucsc.edu/cgi-bin/",
+  goldenPath_url="http://hgdownload.cse.ucsc.edu/goldenPath",
+  miRBaseBuild=NA
+)
+
+
+######## promoters from genes
+my.promoters<-trim(suppressWarnings(promoters(downloadgenes, upstream=2000, downstream=200)), use.names=TRUE)
+
+DMRs$chrnum<-as.numeric(gsub("chr", "", DMRs$chr))
+RSatScanDMRs.order<-with(DMRs, DMRs[order(chrnum, pos.start),])
+
+
+
+mychrindlist<-rownames(table(RSatScanDMRs.order$chr)) # this is not in order (1, 10, 11,...) instead of (1,2,..)
+mychrlistorder<-intersect(c(paste("chr",1:22, sep=""),"chrX", "chrY"), mychrindlist )
+
+
+DMRcount<-0
+for (i in 1:length(mychrlistorder)){
+  mychr<-mychrlistorder[i]
+  chrDMRs<-which(RSatScanDMRs.order$chr==mychr)
+  
+  
+  ##########################    + ideogram     ##########################  
+  
+  itrack <- IdeogramTrack(genome = build, chromosome = mychr) # this makes the ideogram track, given build and chromosome
+  
+  ##########################    + genes     ##########################  
+  
+  grtrack <- GeneRegionTrack(downloadgenes, genome = build,
+                             name = "Genes", showId=FALSE, #geneSymbols = TRUE, 
+                             chromosome=mychr
+                             #from=region$start-5000, to=region$end+5000,
+                             #transcriptAnnotation = "transcript" 
+                             #,collapseTranscripts="meta"
+  )
+  
+  #TranscriptDB does not have symbols?
+  library("org.Hs.eg.db")
+  symbols <- suppressWarnings(unlist(mapIds(org.Hs.eg.db, gene(grtrack), "SYMBOL", "ENTREZID",multiVals = "first")))
+  
+  
+  
+  
+  a<-symbol(grtrack)
+  b<-gene(grtrack)
+  c<-symbols[gene(grtrack)]
+  
+  symbol(grtrack) <- symbols[gene(grtrack)]
+  symbol(grtrack)[is.na(symbol(grtrack))]<-a[is.na(symbol(grtrack))]
+  gene(grtrack)<- symbol(grtrack)  # this is new!
+  ##########################    + promoters     ##########################  
+  
+  my.promoters.chr<-my.promoters[seqnames(my.promoters) == mychr  ]
+  ptrack <- AnnotationTrack(my.promoters.chr, name = "Promoters")
+  
+  
+  
+  ##########################    + CpG islands     ##########################  
+  
+  CpGtrack=UcscTrack(track="CpG Islands", genome=build, chromosome=mychr, 
+                     start="chromStart", end="chromEnd", name="CpG Islands", fill="#ADE6BA")
+  
+  
+  
+  for (DMRind in chrDMRs){  #
+    RSatScanDMR<-RSatScanDMRs.order[DMRind,]
+    DMRcount<-DMRcount+1
+    cat("\n\n\n\n\n\nDMR", DMRcount, "of", dim(RSatScanDMRs.order)[1], "...\n\n\n\n\n\n")
+    
+    
+    ##########################    + region     ##########################  
+    
+    region<-data.frame(RSatScanDMR["pos.start"],RSatScanDMR["pos.stop"], mychr)
+    plotborder<-round((RSatScanDMR["pos.stop"]-RSatScanDMR["pos.start"])*1.0)
+    plotstart<-max((RSatScanDMR["pos.start"]-plotborder), 0)
+    plotstop<-min((RSatScanDMR["pos.stop"]+plotborder), end(tail(itrack@range@ranges, 1))  )
+    
+    
+    names(region)<-c("start", "end", "chromosome")
+    atrack <- AnnotationTrack(region, name = "DMR",  fill="#9966ff")
+    
+    
+    ##########################    + likelihoods     ##########################  
+    # this one is if we only want logliks in the region
+    #mylogliks<-likelihoods[which(as.character(likelihoods$chr)==as.character(region$chromosome) & likelihoods$pos>=region$start  & likelihoods$pos<=region$end),]
+    
+    # this is if we want all logliks in the plotting area.
+    mylogliks<-likelihoods[which(as.character(likelihoods$chr)==as.character(region$chromosome) & likelihoods$pos>=plotstart  & likelihoods$pos<=plotstop),]
+    
+    dtrack <- DataTrack(data = mylogliks$loglik, start = mylogliks$pos, end = mylogliks$pos, 
+                        chromosome = as.character(region$chromosome), genome = build,
+                        name = "LogLik", fill="#808080")
+    
+    
+    ##########################    + gene names     ##########################  
+    #grtrack@range@ranges #72163
+    #symbol(grtrack)
+    mygeneinds<-which(grtrack@range@ranges@start<=plotstop & (grtrack@range@ranges@start + grtrack@range@ranges@width -1 )>=plotstart)
+    mygenes<-symbol(grtrack)[mygeneinds]
+    namestarts<-pmax(plotstart+((plotstop-plotstart)*.12), (grtrack@range@ranges@start[mygeneinds]))
+    
+    mygenes.unique<-mygenes[!duplicated(mygenes)]
+    namestarts.unique<-namestarts[!duplicated(mygenes)]
+    
+    ucgeneind<-sum(is.na(gene(grtrack)[mygeneinds]))
+    
+    if (length(namestarts)>0){
+      nameTrack <- AnnotationTrack(start = namestarts.unique,
+                                   width = ((plotstop-plotstart)*.1), chromosome = as.character(region$chromosome), group = mygenes.unique,
+                                   genome = build, name = "Gene Names", showId = TRUE, 
+                                   col=NULL, 
+                                   fill="white")
+    } else {nameTrack<- AnnotationTrack(start = plotstart,
+                                        width = ((plotstop-plotstart)*.1), chromosome = as.character(region$chromosome), id = "empty",
+                                        genome = build, name = "Gene Names", showFeatureId = FALSE, 
+                                        col=NULL, 
+                                        fill="white") 
+    ucgeneind<-1
+    }
+  }}
+
+
+```
+
+```{r, echo=F, message=F,  fig.width=7, fig.height=9}
+
+
+##########################    plot all     ##########################  
+#failtracks<-list(itrack,  atrack, dtrack, grtrack, ptrack, CpGtrack )
+#succeedtracks<-list(itrack,  atrack, dtrack, grtrack, ptrack, CpGtrack )
+if(ucgeneind==0){
+  plotTracks(list(itrack,  atrack, dtrack, grtrack, nameTrack, ptrack, CpGtrack ), from=plotstart, to=plotstop, geneSymbols = FALSE,
+             fontsize=12, type = "histogram", 
+             collapseTranscripts="meta" , 
+             main=paste(RSatScanDMR$chr, ":",RSatScanDMR$pos.start, "-",RSatScanDMR$pos.stop ), 
+             cex.main=0.75
+  )
+}
+
+
+
+
+```
+
+
+
+References
+----------------------------------------------------------------------
+1. Park, Y., Figueroa, M. E., Rozek, L. S. & Sartor, M. A. MethylSig: a whole genome DNA methylation analysis pipeline. Bioinformatics 30, 2414-22 (2014).
+
+2. Kulldorff, M. SaTScan: Software for the spatial and space-time scan statistics. http://www.satscan.org/
+
+3. RSatScan
+
+4. Gviz
+
+
+
+
+Appendix: Creating a methylSigData object
+----------------------------------------------------------------------
+

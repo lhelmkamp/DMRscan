@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="author" content="Laura Helmkamp" />
+
+<meta name="date" content="2015-09-18" />
+
+<title>methdiffSatScan vignette</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+<div id="header">
+<h1 class="title">methdiffSatScan vignette</h1>
+<h4 class="author"><em>Laura Helmkamp</em></h4>
+<h4 class="date"><em>2015-09-18</em></h4>
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>1: Introduction</h2>
+<p>DNA methylation plays critical roles in gene regulation and cellular specification without altering DNA sequences. It is one of the best understood and most intensively studied epigenetic marks in mammalian cells. Treatment of DNA with sodium bisulfite deaminates unmethylated cytosines to uracil while methylated cytosines are resistant to this conversion thus allowing for the discrimination between methylated and unmethylated CpG sites. Sodium bisulfite pre-treatment of DNA coupled with next-generation sequencing has allowed DNA methylation to be studied quantitatively and genome-wide at single cytosine site resolution. - change this; taken from MethylSig</p>
+<p>The <strong>methdiffSatScan</strong> package allows users to find differentially methylated regions (DMRs) using the scan statistic. <strong>methdiffSatScan</strong> constitutes a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package <strong>methylSig</strong>, the free scan statistic software <strong>SaTScan</strong> (via <strong>RSaTScan</strong>), and the plotting capabilities of Gviz [1,2,3,4].</p>
+<p>This document is a step-by-step user guide for the methdiffSatScan package.</p>
+</div>
+<div id="installation" class="section level2">
+<h2>2: Installation</h2>
+<div id="a-installing-methdiffsatscan" class="section level3">
+<h3>2a: Installing methdiffSatScan</h3>
+<p>Install <strong>methdiffSatScan</strong> with the devtools R package:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(devtools) 
+<span class="kw">install_github</span>(<span class="st">'lhelmkamp/methdiffSatScan'</span>)</code></pre>
+</div>
+<div id="b-installing-satscan" class="section level3">
+<h3>2b: Installing SaTScan</h3>
+<p><strong>methdiffSatScan</strong> requires the stand-alone software <strong>SaTScan</strong>. This can be easily downloaded from <a href="http://www.satscan.org/download.html" class="uri">http://www.satscan.org/download.html</a> for Windows, Linux, or Mac OS X.</p>
+</div>
+</div>
+<div id="sample-data-and-data-class" class="section level2">
+<h2>3: Sample data and data class</h2>
+<p>As sample data, we use a small portion of the sample data publicly available on the GEO database under accession number GSE61161. Data was obtained from 39 patients with chronic myelomonocytic leukemia (CMML), and we are interested in locating regions which could predict response to a commonly used treatment. Data for chromosome 18 is provided with the package.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(methdiffSatScan) 
+<span class="kw">data</span>(CMML_chr18)
+CMML_chr18</code></pre>
+<pre><code>## methylSigData object with 65,503 rows
+## --------------------------
+##      chr start end strand coverage1 numCs1 numTs1 coverage2 numCs2 numTs2
+## 1  chr18   796 796      +        70     70      0        67     63      4
+## 2  chr18   816 816      +        72     46     26        67     59      8
+## 3  chr18   817 817      +        66     46     20        55     53      2
+## 4  chr18   824 824      +        70     64      6        66     63      3
+## 5  chr18   825 825      +        72     70      2        55     55      0
+## 6  chr18   830 830      +        70     67      3        66     56     10
+## 7  chr18   831 831      +        70     68      2        57     55      2
+## 8  chr18   832 832      +        69     66      3        65     56      9
+## 9  chr18   833 833      +        71     68      3        57     56      1
+## 10 chr18   840 840      +        58     58      0        51     51      0
+##    coverage3 numCs3 numTs3 coverage4 numCs4 numTs4 coverage5 numCs5 numTs5
+## 1         82     78      4        30     29      1       103     83     20
+## 2         84     80      4        29     26      3       111    100     11
+## 3         86     82      4        46     43      3       105     98      7
+## 4         82     71     11        30     28      2       110    103      7
+## 5         84     77      7        47     46      1       108    104      4
+## 6         83     79      4        29     26      3       110    103      7
+## 7         87     82      5        48     44      4       108    103      5
+## 8         80     67     13        27     26      1       111    101     10
+## 9         88     81      7        48     45      3       107     96     11
+## 10       136    124     12        86     85      1       162    125     37
+##    coverage6 numCs6 numTs6 coverage7 numCs7 numTs7 coverage8 numCs8 numTs8
+## 1        128    124      4       177    171      6        96     88      8
+## 2        128    118     10       178    171      7        98     94      4
+## 3        171    161     10       111    107      4        82     73      9
+## 4        127    122      5       177    163     14        99     90      9
+## 5        176    174      2       116    115      1        80     76      4
+## 6        128    109     19       176    130     46        96     89      7
+## 7        175    158     17       115    112      3        82     79      3
+## 8        128    103     25       175    127     48        98     95      3
+## 9        177    159     18       116    112      4        83     70     13
+## 10       144    142      2       138     77     61        62     62      0
+##    coverage9 numCs9 numTs9 coverage10 numCs10 numTs10 coverage11 numCs11
+## 1        107     98      9         81      74       7         NA      NA
+## 2        108    101      7         82      75       7         NA      NA
+## 3        123    114      9        108     102       6         NA      NA
+## 4        106    104      2         82      76       6         NA      NA
+## 5        122    118      4        111     106       5         NA      NA
+## 6        107    102      5         81      74       7         NA      NA
+## 7        124    114     10        110     107       3         NA      NA
+## 8        107    102      5         81      73       8         NA      NA
+## 9        124    118      6        111     102       9         NA      NA
+## 10        88     86      2         77      74       3        203     203
+##    numTs11 coverage12 numCs12 numTs12 coverage13 numCs13 numTs13
+## 1       NA         NA      NA      NA         NA      NA      NA
+## 2       NA         NA      NA      NA         NA      NA      NA
+## 3       NA         NA      NA      NA         NA      NA      NA
+## 4       NA         NA      NA      NA         NA      NA      NA
+## 5       NA         NA      NA      NA         NA      NA      NA
+## 6       NA         NA      NA      NA         NA      NA      NA
+## 7       NA         NA      NA      NA         NA      NA      NA
+## 8       NA         NA      NA      NA         NA      NA      NA
+## 9       NA         NA      NA      NA         NA      NA      NA
+## 10       0         94      93       1        176     173       3
+##    coverage14 numCs14 numTs14 coverage15 numCs15 numTs15 coverage16
+## 1          40      40       0         NA      NA      NA         NA
+## 2          39      39       0         NA      NA      NA         NA
+## 3          NA      NA      NA         NA      NA      NA         NA
+## 4          39      38       1         NA      NA      NA         NA
+## 5          NA      NA      NA         NA      NA      NA         NA
+## 6          40      18      22         NA      NA      NA         NA
+## 7          NA      NA      NA         NA      NA      NA         NA
+## 8          40       7      33         NA      NA      NA         NA
+## 9          NA      NA      NA         NA      NA      NA         NA
+## 10        102      70      32         92      76      16         97
+##    numCs16 numTs16 coverage17 numCs17 numTs17 coverage18 numCs18 numTs18
+## 1       NA      NA         NA      NA      NA        114     108       6
+## 2       NA      NA         NA      NA      NA        111      93      18
+## 3       NA      NA         NA      NA      NA         79      71       8
+## 4       NA      NA         NA      NA      NA        114     108       6
+## 5       NA      NA         NA      NA      NA         81      81       0
+## 6       NA      NA         NA      NA      NA        114     111       3
+## 7       NA      NA         NA      NA      NA         81      79       2
+## 8       NA      NA         NA      NA      NA        116     113       3
+## 9       NA      NA         NA      NA      NA         81      80       1
+## 10      97       0         49      49       0         70      70       0
+##    coverage19 numCs19 numTs19 coverage20 numCs20 numTs20 coverage21
+## 1          53      49       4        130     126       4         72
+## 2          51      51       0        131      81      50         73
+## 3          41      39       2         50      40      10         60
+## 4          52      50       2        128     120       8         73
+## 5          42      41       1         50      50       0         61
+## 6          51      47       4        131      67      64         73
+## 7          42      40       2         50      44       6         61
+## 8          52      52       0        129      70      59         72
+## 9          43      43       0         52      50       2         62
+## 10        210     209       1        162     104      58        114
+##    numCs21 numTs21 coverage22 numCs22 numTs22 coverage23 numCs23 numTs23
+## 1       69       3         74      55      19         87      59      28
+## 2       68       5         73      64       9         86      80       6
+## 3       58       2        112      99      13         46      44       2
+## 4       69       4         73      73       0         86      73      13
+## 5       60       1        113     112       1         48      44       4
+## 6       56      17         55      54       1         85      71      14
+## 7       54       7        113     108       5         47      42       5
+## 8       55      17         70      66       4         83      64      19
+## 9       47      15        114     114       0         48      46       2
+## 10     113       1        125     122       3        103      62      41
+##    coverage24 numCs24 numTs24 coverage25 numCs25 numTs25 coverage26
+## 1         172     123      49         80      76       4         62
+## 2         172     163       9         80      73       7         60
+## 3         129     123       6         84      76       8         15
+## 4         170     162       8         79      77       2         62
+## 5         132     132       0         83      81       2         15
+## 6         169     163       6         78      68      10         62
+## 7         133     133       0         84      82       2         15
+## 8         169     148      21         78      54      24         62
+## 9         133     122      11         84      60      24         15
+## 10        233     202      31        118     111       7         56
+##    numCs26 numTs26 coverage27 numCs27 numTs27 coverage28 numCs28 numTs28
+## 1       62       0         46      41       5         18      18       0
+## 2       60       0         45      36       9         18      18       0
+## 3       14       1         44      40       4         12       8       4
+## 4       62       0         45      43       2         17      17       0
+## 5       15       0         44      44       0         12      12       0
+## 6       58       4         46      43       3         18      18       0
+## 7       15       0         45      42       3         12      12       0
+## 8       58       4         44      35       9         18      15       3
+## 9       15       0         45      35      10         12      11       1
+## 10      32      24         44      44       0        221     211      10
+##    coverage29 numCs29 numTs29 coverage30 numCs30 numTs30 coverage31
+## 1          42      38       4         NA      NA      NA         40
+## 2          42      42       0         NA      NA      NA         40
+## 3          NA      NA      NA         NA      NA      NA         11
+## 4          41      41       0         NA      NA      NA         40
+## 5          NA      NA      NA         NA      NA      NA         12
+## 6          40      39       1         NA      NA      NA         40
+## 7          NA      NA      NA         NA      NA      NA         12
+## 8          40      11      29         NA      NA      NA         40
+## 9          NA      NA      NA         NA      NA      NA         12
+## 10        216     171      45         84      82       2         81
+##    numCs31 numTs31 coverage32 numCs32 numTs32 coverage33 numCs33 numTs33
+## 1       40       0         96      92       4         43      42       1
+## 2       39       1         94      92       2         43      39       4
+## 3       11       0        101      96       5         58      54       4
+## 4       39       1         92      90       2         43      42       1
+## 5       11       1        101      97       4         60      59       1
+## 6       37       3         94      91       3         42      34       8
+## 7       10       2        101      97       4         60      58       2
+## 8       34       6         95      89       6         41      26      15
+## 9        7       5        101      90      11         60      46      14
+## 10      57      24        114      98      16         36      36       0
+##    coverage34 numCs34 numTs34 coverage35 numCs35 numTs35 coverage36
+## 1         121      67      54         73      57      16         89
+## 2         122     121       1         73      60      13         86
+## 3         108     106       2         67      33      34         61
+## 4         121     120       1         72      72       0         89
+## 5         109     109       0         69      69       0         64
+## 6         123     122       1         72      72       0         89
+## 7         109     108       1         70      70       0         64
+## 8         121      94      27         72      42      30         86
+## 9         110      90      20         70      70       0         64
+## 10         62      62       0        124     103      21         91
+##    numCs36 numTs36 coverage37 numCs37 numTs37 coverage38 numCs38 numTs38
+## 1       68      21        100      57      43         NA      NA      NA
+## 2       84       2         99      96       3         NA      NA      NA
+## 3       54       7         70      67       3         NA      NA      NA
+## 4       82       7        100      93       7         NA      NA      NA
+## 5       63       1         72      72       0         NA      NA      NA
+## 6       84       5         99      94       5         NA      NA      NA
+## 7       63       1         71      67       4         NA      NA      NA
+## 8       85       1        100      94       6         NA      NA      NA
+## 9       63       1         71      67       4         NA      NA      NA
+## 10      88       3        180     176       4        149     143       6
+##    coverage39 numCs39 numTs39
+## 1          27      11      16
+## 2          27       9      18
+## 3          19      17       2
+## 4          27      27       0
+## 5          18      17       1
+## 6          27      27       0
+## 7          19      19       0
+## 8          27      24       3
+## 9          19      19       0
+## 10         74      72       2
+## --------------------------
+## sample.ids: GSM1498786 GSM1498787 GSM1498788 GSM1498789 GSM1498790 GSM1498791 GSM1498792 GSM1498793 GSM1498794 GSM1498795 GSM1498796 GSM1498797 GSM1498798 GSM1498799 GSM1498800 GSM1498801 GSM1498802 GSM1498803 GSM1498804 GSM1498805 GSM1498806 GSM1498807 GSM1498808 GSM1498809 GSM1498810 GSM1498811 GSM1498812 GSM1498813 GSM1498814 GSM1498815 GSM1498816 GSM1498817 GSM1498818 GSM1498819 GSM1498820 GSM1498821 GSM1498822 GSM1498823 GSM1498824 
+## treatment: 0 0 0 0 0 1 1 1 1 1 1 0 0 1 0 0 1 0 0 0 0 0 1 1 1 1 0 0 0 1 0 1 0 1 1 1 1 1 1 
+## destranded: TRUE 
+## resolution: base 
+## options: maxCount=1000 &amp; minCount=0 &amp; filterSNPs=FALSE &amp; assembly=hg18 &amp; context=CpG</code></pre>
+<p><strong>methdiffSatScan</strong> requires that input data be formatted as methylSigData object, as is output from the methylSigReadData() function in the methylSig package. If your data is not in this format, please see the Appendix.</p>
+</div>
+<div id="finding-dmrs-with-methdiffsatscan" class="section level2">
+<h2>4: Finding DMRs with methdiffSatScan</h2>
+<p>With data in a methylSigData object, the function <strong>methdiffSatScan()</strong> can be used to find DMRs. methdiffSatScan performs the following steps:</p>
+<ol style="list-style-type: decimal">
+<li>Obtain sitewise likelihood ratio statistics</li>
+<li>Normalize the sitewise statistics using quantiles</li>
+<li>Write the files needed by SatScan to a local directory</li>
+<li>Run SatScan and view the results</li>
+</ol>
+<p>We start with a simple call to <strong>methdiffSatScan()</strong> for the chromosome 18 data:</p>
+<pre class="sourceCode r"><code class="sourceCode r">time0.a&lt;-<span class="kw">proc.time</span>()
+result.a&lt;-<span class="kw">methdiffSatScan</span>(CMML_chr18, <span class="dt">xvalues =</span> <span class="st">&quot;Index&quot;</span>)
+time1.a&lt;-<span class="kw">proc.time</span>()</code></pre>
+<p>Here, <code>xvalues = &quot;Index&quot;</code> indicates that in the scan statistic, the data points will be treated as equally spaced rather than using the position of the site on the chromosome. We include timing code to allow the user to compare computational speed:</p>
+<pre class="sourceCode r"><code class="sourceCode r">(time1.a-time0.a)/<span class="dv">60</span></code></pre>
+<pre><code>##      user    system   elapsed 
+##  2.648833  0.001500 13.404833</code></pre>
+<p>On our computer, where chromosome 18 takes about 13 minutes, analyzing the entire genome-wide dataset for the CMML data takes about 16 hours.</p>
+<p>The output <code>result.a</code> is a list, the first element of which contains the significant DMRs:</p>
+<pre class="sourceCode r"><code class="sourceCode r">result.a$DMRs</code></pre>
+<pre><code>##      chr pos.start pos.stop ind.start ind.stop length nsites  pval
+## 1  chr18  68685090 68686053     43903    44071    964    169 0.001
+## 2  chr18  73090715 73092199     50540    50687   1485    148 0.018
+## 3  chr18  65219178 65220130     42710    42859    953    150 0.018
+## 4  chr18  43027822 43035090     29187    29442   7269    256 0.026
+## 5  chr18   4443976  4445540      3358     3549   1565    192 0.035
+## 6  chr18  30056605 30328285     23151    23463 271681    313 0.035
+## 7  chr18  74839653 74841158     54786    54991   1506    206 0.037
+## 8  chr18  18004331 18005631     16956    17075   1301    120 0.039
+## 9  chr18  75487088 75487435     59937    59947    348     11 0.041
+## 10 chr18  55038079 55091592     38084    38537  53514    454 0.043</code></pre>
+<p>Note that the result is also automatically output to <code>result</code>; we output the result as a precaution due to the long computational time of <strong>methdiffSatScan</strong> on large datasets. However, we recommend returning output to a more desciptive name as well, as <code>result</code> will be overwritten by subsequent calls to <strong>methdiffSatScan</strong>.</p>
+<p>If multiple chromosomes are present in the input <code>meth</code> object, <strong>methdiffSatScan</strong> will automatically analyze each chhromsome separately. For human data, the user can also split each chromsome at the centromere with <code>splitcentromere = TRUE</code> and by specifying <code>build</code> from <code>&quot;hg18&quot;</code>, <code>&quot;hg19&quot;</code>, or <code>&quot;hg38&quot;</code>. This will speed up the analysis somewhat, and may be necesary for large datasets depending on system memory.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(methdiffSatScan) 
+time0.b&lt;-<span class="kw">proc.time</span>()
+result.b&lt;-<span class="kw">methdiffSatScan</span>(CMML_chr18, <span class="dt">xvalues =</span> <span class="st">&quot;Index&quot;</span>, <span class="dt">splitchr =</span> <span class="ot">TRUE</span>, <span class="dt">splitcentromere =</span> <span class="ot">TRUE</span>, <span class="dt">build =</span> <span class="st">&quot;hg18&quot;</span>)
+time1.b&lt;-<span class="kw">proc.time</span>()</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">(time1.b-time0.b)/<span class="dv">60</span></code></pre>
+<pre><code>##        user      system     elapsed 
+## 2.559166667 0.002833333 8.567500000</code></pre>
+<p>Comparing these new results to those obtained previously:</p>
+<pre class="sourceCode r"><code class="sourceCode r">result.b$DMRs</code></pre>
+<pre><code>##      chr pos.start pos.stop ind.start ind.stop length nsites  pval
+## 1  chr18   4444894  4445540      3434     3549    647    116 0.002
+## 2  chr18  68685090 68686053     28408    28576    964    169 0.001
+## 3  chr18  73090715 73092199     35045    35192   1485    148 0.016
+## 4  chr18  65219178 65220130     27215    27364    953    150 0.016
+## 5  chr18  43027822 43035090     13692    13947   7269    256 0.021
+## 6  chr18  30056605 30328285      7656     7968 271681    313 0.024
+## 7  chr18  74839653 74841158     39291    39496   1506    206 0.026
+## 8  chr18  18004331 18005631      1461     1580   1301    120 0.027
+## 9  chr18  75487088 75487435     44442    44452    348     11 0.027
+## 10 chr18  55038079 55091592     22589    23042  53514    454 0.036</code></pre>
+<p>we note that the same number of regions was found, and the bounds of these regions are largely the same. However, the results have changed slightly. This is to expected, as SaTScan finds regions by minimizing the total variance of the data, and what we have specified as the “full” data has changed.</p>
+</div>
+<div id="dmr-visualization" class="section level2">
+<h2>5: DMR visualization</h2>
+<p>We can now visualize the significant regions with the function <strong>plotSatScanresult</strong>. The results will be output to a pdf in <code>mydir</code>, if this was specified, or in the current working directory. The options <code>plottopn</code> and <code>plotpval</code> can be used to restrict plotting to the top few results by p-value or to results with a specified p-value more conservative than 0.05, respectively. The default is to plot all the significant results returned by <strong>plotSatScanresult</strong>. Alternatively, plots can also be output directly from the call to <strong>plotSatScanresult</strong> by specifying <code>plotresult=TRUE</code>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plotSatScanresult</span>(result.b) </code></pre>
+<p>For example the first region:</p>
+<p><img src="data:image/png;base64,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33a8PIb39Ch+uib1ffF9uBw8qq6GNH1GBBqcqyFNnxGBBiesPAkU4ggU0ggU0ggU0ggU0ggU0ggU0ggU0ggU0ra6rwK4wwwKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaQQKaUYCdf29AVA1TqC7p3tR4/fRJL/8H0CdcQLdPvzk8LNvm76xk0DRaJxAF3c+jv9p+jvLBIpGIwV69/Ozjxq/85hA0WikfdC96KvDxu88JlA0GinQVgSKRmME2vVdHwSKRiPNoPvH893G70QkUDSyFuji5E9H0bN0v3MRH8EvOIrHcLYC3T46e//odC89ct8+imdQjuIxnK1AFyfH20enu+v9zp37m9mUQDGAvUCTdzb3Or4EkUDRwdo+aNLmqtLluYijeJyHvaP4pMl1n4u7jdt3AkWbsd6Lb9vUEygajfc6KIHiHCwGmjtyX76XxD4ohrMXaPtrnwSKXuwFWnj3iKN4nI/FTXzu/ffF3U/v/P6PzKAYzOIMmvsM0+LO7w4/5b14DDfWf5N0sP81gWI4i59mujff3xwj7Z7u3OfjdhjO3qeZTpcfaeIoHhdi8dNMycTJh0VwMdY28cnmfTmN8p984ALsHSTtxxc17nYSKPrhT99AGn/6BtL40zeQxp++gTT+9A2k8advII0/fQNpzKCQphKo67+EDlUigQK2ECikESikESikESikESikESikESikESikESikESikESikESikESikESikESikESikbXVfBXCHQCGNQCGNQCGNQCGNQCGNQCHt/wHjNnyq7LdvaAAAAABJRU5ErkJggg==" /></p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ol style="list-style-type: decimal">
+<li><p>Park, Y., Figueroa, M. E., Rozek, L. S. &amp; Sartor, M. A. MethylSig: a whole genome DNA methylation analysis pipeline. Bioinformatics 30, 2414-22 (2014).</p></li>
+<li><p>Kulldorff, M. SaTScan: Software for the spatial and space-time scan statistics. <a href="http://www.satscan.org/" class="uri">http://www.satscan.org/</a></p></li>
+<li><p>RSatScan</p></li>
+<li><p>Gviz</p></li>
+</ol>
+</div>
+<div id="appendix-creating-a-methylsigdata-object" class="section level2">
+<h2>Appendix: Creating a methylSigData object</h2>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

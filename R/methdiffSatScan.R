@@ -5,8 +5,7 @@
 #'
 #' @param meth input data, a  methylSigData object.
 #' @param mydir a directory into which temporary files can be written.
-#' @param xvalues either "Index" to use the position values associated with the data, or "Index" to treat the data points as equally spaced along the chromosome.
-#' @param splitchr when true, splits the data by chromosome and analyzes each separately.
+#' @param xvalues defaults to "Position" to use the position values associated with the data.  Use "Index" to treat the data points as equally spaced along the chromosome.
 #' @param splitcentromere splits data at the centromere within each chromosome.  May be necessary for large datasets.  Must also specify build.
 #' @param build can be either hg18, hg19, or hg38.  This is necessary when splitcentromere=TRUE and/ or plotresult=TRUE.
 #' @param smallestregion specifies the smallest region (in number of data points) that will be returned as a DMR. Default=4.
@@ -22,7 +21,7 @@
 
 
 
-methdiffSatScan <- function(meth, mydir=NULL, xvalues=c("Index", "Position"), splitchr=FALSE, splitcentromere=FALSE, build=c("hg18", "hg19", "hg38"), smallestregion=4, plotresult=FALSE, ... ){
+methdiffSatScan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE, build=c("hg18", "hg19", "hg38"), smallestregion=4, plotresult=FALSE, ... ){
   
   library("rsatscan")
   library(methylSig)
@@ -40,10 +39,10 @@ methdiffSatScan <- function(meth, mydir=NULL, xvalues=c("Index", "Position"), sp
   dir.create(paste(mydir, "/methdiffSatScan_tmp", sep=""), showWarnings = TRUE, recursive = FALSE, mode = "0777")
   tmpdir<-paste(mydir, "/methdiffSatScan_tmp", sep="")
   
-  
-  ##################### 1: splitting by chromosome and centromere.
+
+  ##################### 1: splitting on centromere.
   #####################if we want to split by chromosome, see which chromosomes are present in the data
-  if( splitchr==TRUE & splitcentromere==TRUE){
+  if( splitcentromere==TRUE){
     
     
     ##################### if we want to split at centromere, read in centromeres for proper build
@@ -130,9 +129,9 @@ methdiffSatScan <- function(meth, mydir=NULL, xvalues=c("Index", "Position"), sp
   } # end centromere and chr
   
   
-  ##################### 2: splitting by chromosome, not centromere.
+  ##################### 2: not splitting on centromere.
   
-  if( splitchr==TRUE & splitcentromere==FALSE){
+  if( splitcentromere==FALSE){
     found<-vector()
     loglik<-vector()
     
@@ -164,20 +163,7 @@ methdiffSatScan <- function(meth, mydir=NULL, xvalues=c("Index", "Position"), sp
     
   } # end chr, no centromere
   
-  ##################### 3: not splitting by chromosome or centromere
-  if( splitchr==FALSE & splitcentromere==FALSE){
-    
-    result<-SatScanrun(meth=meth, xvalues=xvalues, smallestregion=smallestregion, dir=tmpdir)
-    found<-result$resultmat
-    loglik<-result$logliks
-    
-      
-  } # end no chr, no centromere
-  
-  ##################### 4: bad combination
-  if( splitchr==FALSE & splitcentromere==TRUE){
-    stop("Must split by chromosome to split by centromere.")
-  } # end no chr, yes centromere
+
   
   # remove the directory too
   unlink(tmpdir,recursive = TRUE , force = TRUE)

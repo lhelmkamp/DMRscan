@@ -4,18 +4,16 @@
 \alias{methdiffSatScan}
 \title{Find differentially methylated regions using the scan statistic.}
 \usage{
-methdiffSatScan(meth, mydir = NULL, xvalues = c("Index", "Position"),
-  splitchr = FALSE, splitcentromere = FALSE, build = c("hg18", "hg19",
-  "hg38"), smallestregion = 4, plotresult = FALSE, ...)
+methdiffSatScan(meth, mydir = NULL, xvalues = "Position",
+  splitcentromere = FALSE, build = c("hg18", "hg19", "hg38"),
+  smallestregion = 4, plotresult = FALSE, ...)
 }
 \arguments{
 \item{meth}{input data, a  methylSigData object.}
 
 \item{mydir}{a directory into which temporary files can be written.}
 
-\item{xvalues}{either "Index" to use the position values associated with the data, or "Index" to treat the data points as equally spaced along the chromosome.}
-
-\item{splitchr}{when true, splits the data by chromosome and analyzes each separately.}
+\item{xvalues}{defaults to "Position" to use the position values associated with the data.  Use "Index" to treat the data points as equally spaced along the chromosome.}
 
 \item{splitcentromere}{splits data at the centromere within each chromosome.  May be necessary for large datasets.  Must also specify build.}
 

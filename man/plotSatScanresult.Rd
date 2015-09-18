@@ -4,7 +4,8 @@
 \alias{plotSatScanresult}
 \title{Plot the results of methdiffSatScan}
 \usage{
-plotSatScanresult(result, plottopn = NULL, plotpval = NULL)
+plotSatScanresult(result, plottopn = NULL, plotpval = NULL,
+  plotfilename = NULL)
 }
 \arguments{
 \item{result}{is the result of running methdiffSatScan- a list containing a vector of likelihood values for each point, the DMRs which were found with p-value <0.05, the build, and the directory to which we want to write a pdf.}
@@ -12,6 +13,8 @@ plotSatScanresult(result, plottopn = NULL, plotpval = NULL)
 \item{plottopn}{allows for the plotting of only the top n results by p-value, in case of a large number of identified DMRs.}
 
 \item{plotpval}{allows for plotting of only DMRs with a p-value less than a given value (e.g. 0.001), in case of a large nunmber of identified DMRs.}
+
+\item{plotfilename}{is the name of the pdf file which will be output to the directory listed in result$dir.}
 }
 \value{
 nothing; results are output to pdf.

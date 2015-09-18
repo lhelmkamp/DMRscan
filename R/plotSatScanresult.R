@@ -5,6 +5,7 @@
 #' @param result is the result of running methdiffSatScan- a list containing a vector of likelihood values for each point, the DMRs which were found with p-value <0.05, the build, and the directory to which we want to write a pdf.
 #' @param plottopn allows for the plotting of only the top n results by p-value, in case of a large number of identified DMRs.
 #' @param plotpval allows for plotting of only DMRs with a p-value less than a given value (e.g. 0.001), in case of a large nunmber of identified DMRs.
+#' @param plotfilename is the name of the pdf file which will be output to the directory listed in result$dir.
 #' @return nothing; results are output to pdf.  
 #' @seealso \code{\link{methdiffSatScan}} which wraps this function 
 #' @export
@@ -15,7 +16,7 @@
 #' 
 
 
-plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL){
+plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL, plotfilename=NULL){
   
   
   ########## this part controls how many results we want to plot.
@@ -82,7 +83,12 @@ plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL){
   mychrindlist<-rownames(table(RSatScanDMRs.order$chr)) # this is not in order (1, 10, 11,...) instead of (1,2,..)
   mychrlistorder<-intersect(c(paste("chr",1:22, sep=""),"chrX", "chrY"), mychrindlist )
   
-  pdf(file = paste(dir, "/RSatSscan_testplot.pdf", sep=""))
+  if (is.null(plotfilename)){plotfilename<-"methdiffSatScan_plot.pdf"}
+  if (substr(plotfilename,(nchar(plotfilename)+1)-4,nchar(plotfilename))==".pdf") {
+    plotfilename.pdf<-plotfilename
+  } else {plotfilename.pdf<-paste(plotfilename, ".pdf", sep="")}
+
+  pdf(file = paste(dir, plotfilename.pdf , sep="/"))
   
   DMRcount<-0
   for (i in 1:length(mychrlistorder)){
@@ -147,7 +153,7 @@ plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL){
       
       
       names(region)<-c("start", "end", "chromosome")
-      atrack <- AnnotationTrack(region, name = "RSatScan",  fill="#9966ff")
+      atrack <- AnnotationTrack(region, name = "DMR",  fill="#9966ff")
       
       
       ##########################    + likelihoods     ##########################  
