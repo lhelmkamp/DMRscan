@@ -59,7 +59,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h3>2a: Installing methdiffSatScan</h3>
 <p>Install <strong>methdiffSatScan</strong> with the devtools R package:</p>
 <pre class="r"><code>library(devtools) 
-install_github('lhelmkamp/methdiffSatScan', build_vignettes = TRUE)</code></pre>
+install_github('lhelmkamp/methdiffSatScan')</code></pre>
 </div>
 <div id="b-installing-satscan" class="section level3">
 <h3>2b: Installing SaTScan</h3>
@@ -69,8 +69,8 @@ install_github('lhelmkamp/methdiffSatScan', build_vignettes = TRUE)</code></pre>
 <div id="sample-data-and-data-class" class="section level2">
 <h2>3: Sample data and data class</h2>
 <p>As sample data, we use a small portion of the sample data publicly available on the GEO database under accession number GSE61161. Data was obtained from 39 patients with chronic myelomonocytic leukemia (CMML), and we are interested in locating regions which could predict response to a commonly used treatment. Data for chromosome 18 is provided with the package.</p>
-<pre class="r"><code>library(methdiffSatScan) 
-CMML_chr18[,1:5]</code></pre>
+<pre class="r"><code>library(methdiffSatScan) </code></pre>
+<pre class="r"><code>CMML_chr18[,1:5]</code></pre>
 <pre><code>## methylSigData object with 63,725 rows
 ## --------------------------
 ##      chr start end strand coverage1 numCs1 numTs1 coverage2 numCs2 numTs2

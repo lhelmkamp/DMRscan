@@ -31,9 +31,9 @@ This document is a step-by-step user guide for the methdiffSatScan package.
 
 Install **methdiffSatScan** with the devtools R package:
 
-```{r, message=F, warning=F}
+```{r, message=F, warning=F,  eval=FALSE}
 library(devtools) 
-install_github('lhelmkamp/methdiffSatScan', build_vignettes = TRUE)
+install_github('lhelmkamp/methdiffSatScan')
 ```
 
 
@@ -51,9 +51,20 @@ As sample data, we use a small portion of the sample data publicly available on 
 
 ```{r, message=F, warning=F}
 library(methdiffSatScan) 
+
+```
+
+```{r, results = "hide", warning = FALSE, message=FALSE, echo = FALSE}
+CMML_chr18
+
+```
+
+
+```{r, message=F, warning=F}
 CMML_chr18[,1:5]
 
 ```
+
 
 **methdiffSatScan** requires that input data be formatted as methylSigData object, as is output from the methylSigReadData() function in the methylSig package.  If your data is not in this format, please see the Appendix.   
 
