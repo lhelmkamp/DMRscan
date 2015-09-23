@@ -1,12 +1,10 @@
 ---
 title: "methdiffSatScan vignette"
 author: "Laura Helmkamp"
-date: "`r Sys.Date()`"
-output: pdf_document
-vignette: >
-  %\VignetteIndexEntry{methdiffSatScan}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+date: '`r Sys.Date()`'
+output: html_document
+vignette: |
+  %\VignetteIndexEntry{methdiffSatScan} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
 
@@ -52,8 +50,7 @@ As sample data, we use a small portion of the sample data publicly available on 
 
 ```{r, message=F, warning=F}
 library(methdiffSatScan) 
-data(CMML_chr18)
-CMML_chr18
+CMML_chr18[,1:5]
 
 ```
 
@@ -73,7 +70,7 @@ With data in a methylSigData object, the function **methdiffSatScan()** can be u
 We start with a simple call to **methdiffSatScan()** for the chromosome 18 data:
 
 
-```{r, message=F, warning=F, results="hide"}
+```{r, eval=FALSE}
 time0.a<-proc.time()
 result.a<-methdiffSatScan(CMML_chr18, xvalues = "Index")
 time1.a<-proc.time()
@@ -102,8 +99,7 @@ Note that the result is also automatically output to `result`; we output the res
 
 If multiple chromosomes are present in the input `meth` object, **methdiffSatScan** will automatically analyze each chhromsome separately.  For human data, the user can also split each chromsome at the centromere with `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets depending on system memory.
 
-```{r, message=F, warning=F, results="hide"}
-library(methdiffSatScan) 
+```{r, eval=FALSE}
 time0.b<-proc.time()
 result.b<-methdiffSatScan(CMML_chr18, xvalues = "Index", splitchr = TRUE, splitcentromere = TRUE, build = "hg18")
 time1.b<-proc.time()

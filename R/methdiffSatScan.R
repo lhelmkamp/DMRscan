@@ -135,7 +135,7 @@ methdiffSatScan <- function(meth, mydir=NULL, xvalues="Position", splitcentromer
     found<-vector()
     loglik<-vector()
     
-    mychrindlist<-rownames(table(meth@data.chr)) # this is not in order (1, 10, 11,...) instead of (1,2,..)
+    mychrindlist<-rownames(table(as.character(meth@data.chr))) # this is not in order (1, 10, 11,...) instead of (1,2,..)
     mychrlistorder<-intersect(c(paste("chr",1:22, sep=""),"chrX", "chrY"), mychrindlist )
     
     if (length(mychrlistorder)==length(mychrindlist)){
