@@ -1,12 +1,13 @@
 ---
-title: "methdiffSatScan vignette"
+title: "DMRscan Vignette"
 author: "Laura Helmkamp"
-date: '`r Sys.Date()`'
+date: "`r Sys.Date()`"
 output: BiocStyle::html_document
-vignette: |
-  %\VignetteIndexEntry{methdiffSatScan} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+vignette: >
+  %\VignetteIndexEntry{DMRscan Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-
 
 
 1: Introduction
@@ -32,7 +33,7 @@ Install **methdiffSatScan** with the devtools R package:
 
 ```{r, message=F, warning=F}
 library(devtools) 
-install_github('lhelmkamp/methdiffSatScan')
+install_github('lhelmkamp/methdiffSatScan', build_vignettes = TRUE)
 ```
 
 
