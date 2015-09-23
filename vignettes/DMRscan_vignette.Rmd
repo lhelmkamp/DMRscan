@@ -2,7 +2,7 @@
 title: "methdiffSatScan vignette"
 author: "Laura Helmkamp"
 date: '`r Sys.Date()`'
-output: html_document
+output: BiocStyle::html_document
 vignette: |
   %\VignetteIndexEntry{methdiffSatScan} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
@@ -97,7 +97,7 @@ result.a$DMRs[,c(1:7, 11)]
 Note that the result is also automatically output to `result`; we output the result as a precaution due to the long computational time of **methdiffSatScan** on large datasets.  However, we recommend returning output to a more desciptive name as well, as `result` will be overwritten by subsequent calls to **methdiffSatScan**.
 
 
-If multiple chromosomes are present in the input `meth` object, **methdiffSatScan** will automatically analyze each chhromsome separately.  For human data, the user can also split each chromsome at the centromere with `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets depending on system memory.
+If multiple chromosomes are present in the input `meth` object, **methdiffSatScan** will automatically analyze each chromsome separately.  For human data, the user can also split each chromsome at the centromere with `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets depending on system memory.
 
 ```{r, eval=FALSE}
 time0.b<-proc.time()
@@ -125,7 +125,9 @@ we note that the same number of regions was found, and the bounds of these regio
 5: DMR visualization
 ----------------------------------------------------------------------
 
-We can now visualize the significant regions with the function **plotSatScanresult**. The results will be output to a pdf in `mydir`, if this was specified, or in the current working directory. The options `plottopn` and `plotpval` can be used to restrict plotting to the top few results by p-value or to results with a specified p-value more conservative than 0.05, respectively.  The default is to plot all the significant results returned by **plotSatScanresult**.  Alternatively, plots can also be output directly from the call to **plotSatScanresult** by specifying `plotresult=TRUE`.
+We can now visualize the significant regions with the function **plotSatScanresult**. The results will be output to a pdf in `mydir`, if this was specified, or in the current working directory. By default, all the significant results returned by **plotSatScanresult** will be plotted; the options `plottopn` and `plotpval` can be used to restrict plotting to the top few results by p-value or to results with a specified p-value more conservative than 0.05, respectively.  Plots can also be output directly from the call to **plotSatScanresult** by specifying `plotresult=TRUE`.  
+
+Plotting uses Gviz to plot the DMR along with an ideogram showing the position of the DMR on the chromosome, the log-likelihood values of the data, and nearby genes, promoter regions, and CpG islands.  
 
 
 ```{r, eval=FALSE}
@@ -143,9 +145,9 @@ result.plot$DMRs<-result.b$DMRs[7,]
 
 ####################################### plot in window #################################
 ########## resume with the function
-likelihoods<-result$likelihoods
-build<-result$build
-dir<-result$dir
+likelihoods<-result.b$likelihoods
+build<-result.b$build
+dir<-result.b$dir
 DMRs<-result.plot$DMRs
 
 library(rtracklayer)
