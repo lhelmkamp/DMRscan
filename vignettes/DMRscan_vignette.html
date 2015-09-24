@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
-<meta name="author" content="Laura Helmkamp" />
+<meta name="author" content="Laura Helmkamp and Robert Podolsky" />
 
-<meta name="date" content="2015-09-23" />
+<meta name="date" content="2015-09-24" />
 
 <title>DMRscan Vignette</title>
 
@@ -42,34 +42,37 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <div id="header">
 <h1 class="title">DMRscan Vignette</h1>
-<h4 class="author"><em>Laura Helmkamp</em></h4>
-<h4 class="date"><em>2015-09-23</em></h4>
+<h4 class="author"><em>Laura Helmkamp and Robert Podolsky</em></h4>
+<h4 class="date"><em>2015-09-24</em></h4>
 </div>
 
+<div id="TOC">
+true
+</div>
 
 <div id="introduction" class="section level2">
 <h2>1: Introduction</h2>
-<p>DNA methylation plays critical roles in gene regulation and cellular specification without altering DNA sequences. It is one of the best understood and most intensively studied epigenetic marks in mammalian cells. Treatment of DNA with sodium bisulfite deaminates unmethylated cytosines to uracil while methylated cytosines are resistant to this conversion thus allowing for the discrimination between methylated and unmethylated CpG sites. Sodium bisulfite pre-treatment of DNA coupled with next-generation sequencing has allowed DNA methylation to be studied quantitatively and genome-wide at single cytosine site resolution. - change this; taken from MethylSig</p>
-<p>The <strong>methdiffSatScan</strong> package allows users to find differentially methylated regions (DMRs) using the scan statistic. <strong>methdiffSatScan</strong> constitutes a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package <strong>methylSig</strong>, the free scan statistic software <strong>SaTScan</strong> (via <strong>RSaTScan</strong>), and the plotting capabilities of Gviz [1,2,3,4].</p>
-<p>This document is a step-by-step user guide for the methdiffSatScan package.</p>
+<p>DNA methylation is a crucial and commonly studied epigenetic mechanism for the regulation of gene expression. Differentially methylated regions (DMRs) have been implicated in a number of diseases, as well as in a variety of developmental and aging processes.</p>
+<p>The <strong>DMRscan</strong> package allows users to accurately find DMRs using the scan statistic. <strong>DMRscan</strong> constitues a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package <strong>methylSig</strong>, the free scan statistic software <strong>SaTScan</strong> (via <strong>RSaTScan</strong>), and the plotting capabilities of Gviz [1,2,3,4].</p>
+<p>This document is a step-by-step user guide for the DMRscan package.</p>
 </div>
 <div id="installation" class="section level2">
 <h2>2: Installation</h2>
-<div id="a-installing-methdiffsatscan" class="section level3">
-<h3>2a: Installing methdiffSatScan</h3>
-<p>Install <strong>methdiffSatScan</strong> with the devtools R package:</p>
+<div id="a-installing-dmrscan" class="section level3">
+<h3>2a: Installing DMRscan</h3>
+<p>Install <strong>DMRscan</strong> with the devtools R package:</p>
 <pre class="r"><code>library(devtools) 
-install_github('lhelmkamp/methdiffSatScan')</code></pre>
+install_github('lhelmkamp/DMRscan')</code></pre>
 </div>
 <div id="b-installing-satscan" class="section level3">
 <h3>2b: Installing SaTScan</h3>
-<p><strong>methdiffSatScan</strong> requires the stand-alone software <strong>SaTScan</strong>. This can be easily downloaded from <a href="http://www.satscan.org/download.html" class="uri">http://www.satscan.org/download.html</a> for Windows, Linux, or Mac OS X.</p>
+<p><strong>DMRscan</strong> requires the stand-alone software <strong>SaTScan</strong>. This can be easily downloaded from <a href="http://www.satscan.org/download.html" class="uri">http://www.satscan.org/download.html</a> for Windows, Linux, or Mac OS X.</p>
 </div>
 </div>
 <div id="sample-data-and-data-class" class="section level2">
 <h2>3: Sample data and data class</h2>
 <p>As sample data, we use a small portion of the sample data publicly available on the GEO database under accession number GSE61161. Data was obtained from 39 patients with chronic myelomonocytic leukemia (CMML), and we are interested in locating regions which could predict response to a commonly used treatment. Data for chromosome 18 is provided with the package.</p>
-<pre class="r"><code>library(methdiffSatScan) </code></pre>
+<pre class="r"><code>library(DMRscan) </code></pre>
 <pre class="r"><code>CMML_chr18[,1:5]</code></pre>
 <pre><code>## methylSigData object with 63,725 rows
 ## --------------------------
@@ -101,26 +104,26 @@ install_github('lhelmkamp/methdiffSatScan')</code></pre>
 ## destranded: TRUE 
 ## resolution: base 
 ## options: maxCount=1000 &amp; minCount=0 &amp; filterSNPs=FALSE &amp; assembly=hg18 &amp; context=CpG</code></pre>
-<p><strong>methdiffSatScan</strong> requires that input data be formatted as methylSigData object, as is output from the methylSigReadData() function in the methylSig package. If your data is not in this format, please see the Appendix.</p>
+<p><strong>DMRscan</strong> requires that input data be formatted as methylSigData object, as is output from the <em>methylSigReadData()</em> function in the <strong>methylSig</strong> package. If your data is not in this format, please see the Appendix.</p>
 </div>
-<div id="finding-dmrs-with-methdiffsatscan" class="section level2">
-<h2>4: Finding DMRs with methdiffSatScan</h2>
-<p>With data in a methylSigData object, the function <strong>methdiffSatScan()</strong> can be used to find DMRs. methdiffSatScan performs the following steps:</p>
+<div id="finding-dmrs-with-dmrscan" class="section level2">
+<h2>4: Finding DMRs with DMRscan</h2>
+<p>With data in a methylSigData object, the function <em>DMRscan()</em> can be used to find DMRs. <em>DMRscan()</em> performs the following steps:</p>
 <ol style="list-style-type: decimal">
 <li>Obtain sitewise likelihood ratio statistics</li>
 <li>Normalize the sitewise statistics using quantiles</li>
 <li>Write the files needed by SatScan to a local directory</li>
 <li>Run SatScan and view the results</li>
 </ol>
-<p>We start with a simple call to <strong>methdiffSatScan()</strong> for the chromosome 18 data:</p>
+<p>We start with a simple call to <em>DMRscan()</em> for the chromosome 18 data:</p>
 <pre class="r"><code>time0.a&lt;-proc.time()
-result.a&lt;-methdiffSatScan(CMML_chr18, xvalues = &quot;Index&quot;)
+result.a&lt;-DMRscan(CMML_chr18, xvalues = &quot;Index&quot;)
 time1.a&lt;-proc.time()</code></pre>
-<p>Here, <code>xvalues = &quot;Index&quot;</code> indicates that in the scan statistic, the data points will be treated as equally spaced rather than using the position of the site on the chromosome. We include timing code to allow the user to compare computational speed:</p>
+<p>Here, <code>xvalues = &quot;Index&quot;</code> indicates that in the scan statistic, the data points will be treated as equally spaced rather than using the position of the site on the chromosome. We include timing code to allow the user to estimate computational time:</p>
 <pre class="r"><code>(time1.a-time0.a)/60</code></pre>
 <pre><code>##         user       system      elapsed 
 ##  2.656666667  0.004166667 13.398833333</code></pre>
-<p>On our computer, where chromosome 18 takes about 13 minutes, analyzing the entire genome-wide dataset for the CMML data takes about 16 hours.</p>
+<p>On our computer, where this test of chromosome 18 takes about 13 minutes, analyzing the entire genome-wide dataset for the CMML data takes about 16 hours.</p>
 <p>The output <code>result.a</code> is a list, the first element of which contains the significant DMRs:</p>
 <pre class="r"><code>result.a$DMRs</code></pre>
 <pre><code>##      chr pos.start pos.stop ind.start ind.stop length nsites  pval
@@ -144,10 +147,10 @@ time1.a&lt;-proc.time()</code></pre>
 ## 18 chr18  18004331 18005631     16956    17075   1301    120 0.039
 ## 19 chr18  75487088 75487435     59937    59947    348     11 0.041
 ## 20 chr18  55038079 55091592     38084    38537  53514    454 0.043</code></pre>
-<p>Note that the result is also automatically output to <code>result</code>; we output the result as a precaution due to the long computational time of <strong>methdiffSatScan</strong> on large datasets. However, we recommend returning output to a more desciptive name as well, as <code>result</code> will be overwritten by subsequent calls to <strong>methdiffSatScan</strong>.</p>
-<p>If multiple chromosomes are present in the input <code>meth</code> object, <strong>methdiffSatScan</strong> will automatically analyze each chromsome separately. For human data, the user can also split each chromsome at the centromere with <code>splitcentromere = TRUE</code> and by specifying <code>build</code> from <code>&quot;hg18&quot;</code>, <code>&quot;hg19&quot;</code>, or <code>&quot;hg38&quot;</code>. This will speed up the analysis somewhat, and may be necesary for large datasets depending on system memory.</p>
+<p>Note that the result is also automatically output to <code>result</code>; we output the result as a precaution due to the long computational time of <em>DMRscan()</em> on large datasets. However, we recommend returning output to a more desciptive name as well, as <code>result</code> will be overwritten by subsequent calls to <em>DMRscan()</em>.</p>
+<p>If multiple chromosomes are present in the input <code>meth</code> object, <em>DMRscan()</em> will automatically analyze each chromsome separately. For human data, the user can also split each chromsome at the centromere by setting <code>splitcentromere = TRUE</code> and by specifying <code>build</code> from <code>&quot;hg18&quot;</code>, <code>&quot;hg19&quot;</code>, or <code>&quot;hg38&quot;</code>. This will speed up the analysis somewhat, and may be necesary for large datasets if system memory prevents the entire chromosome from being analyzed simulataneously.</p>
 <pre class="r"><code>time0.b&lt;-proc.time()
-result.b&lt;-methdiffSatScan(CMML_chr18, xvalues = &quot;Index&quot;, splitchr = TRUE, splitcentromere = TRUE, build = &quot;hg18&quot;)
+result.b&lt;-DMRscan(CMML_chr18, xvalues = &quot;Index&quot;, splitchr = TRUE, splitcentromere = TRUE, build = &quot;hg18&quot;)
 time1.b&lt;-proc.time()</code></pre>
 <pre class="r"><code>(time1.b-time0.b)/60</code></pre>
 <pre><code>##     user   system  elapsed 
@@ -186,6 +189,27 @@ time1.b&lt;-proc.time()</code></pre>
 </div>
 <div id="appendix-creating-a-methylsigdata-object" class="section level2">
 <h2>Appendix: Creating a methylSigData object</h2>
+<p>A methylSigData object can be created from CpG methylation score files using the <em>methylSigReadData()</em> function in the <strong>methylSig</strong> package. For a full description of the package and function options, see <a href="http://sartorlab.ccmb.med.umich.edu/software" class="uri">http://sartorlab.ccmb.med.umich.edu/software</a>. We will include a brief example here for simplicity.</p>
+<p>In this example, we have previously downloaded all of the files from GSE into the working directory.</p>
+<p>First we check the format of one of the text files. If your data is not currently in subject-wise text files, data can be rearranged and output to text files that have the following format:</p>
+<pre class="r"><code>fileList = dir()
+subj1data_chr18&lt;-read.table(fileList[1], header=TRUE)</code></pre>
+<pre class="r"><code>head(subj1data_chr18)</code></pre>
+<pre><code>##           chrBase   chr base strand coverage  freqC freqT
+## 1733955 chr18.876 chr18  876      F       49  81.63 18.37
+## 1733956 chr18.833 chr18  833      R       71  95.77  4.23
+## 1733957 chr18.817 chr18  817      R       66  69.70 30.30
+## 1733958 chr18.931 chr18  931      R       61 100.00  0.00
+## 1733959 chr18.841 chr18  841      R       67  95.52  4.48
+## 1733960 chr18.840 chr18  840      F       58 100.00  0.00</code></pre>
+<p>Now, read in the files with <em>methylSigReadData()</em></p>
+<pre class="r"><code>sample.id = substr(fileList, 1, 10)
+responder&lt;-c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1)
+
+#### Read Data ####
+memory.limit(25000)
+meth &lt;- methylSigReadData(fileList, sample.ids = sample.id, assembly = &quot;hg18&quot;, treatment = responder, context = &quot;CpG&quot;, destranded=TRUE)</code></pre>
+<p>You are now ready to run DMRscan!</p>
 </div>
 
 

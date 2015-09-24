@@ -15,7 +15,7 @@ vignette: >
 
 DNA methylation is a crucial and commonly studied epigenetic mechanism for the regulation of gene expression.  Differentially methylated regions (DMRs) have been implicated in a number of diseases, as well as in a variety of developmental and aging processes.    
 
-The **DMRscan** package allows users to accurately find DMRs using the scan statistic.  **DMRscan** constitues a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package **methylSig**,  the free scan statistic software **SaTScan** (via **RSaTScan**), and the plotting capabilities of Gviz [1,2,3,4].
+The **DMRscan** package allows users to accurately find DMRs using the scan statistic.  **DMRscan** constitues a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package **methylSig**,  the free scan statistic software **SaTScan** (via **RSaTScan**), and the plotting capabilities of **Gviz** [1,2,3,4].
 
 This document is a step-by-step user guide for the DMRscan package.
 
@@ -67,7 +67,7 @@ CMML_chr18[,1:5]
 **DMRscan** requires that input data be formatted as methylSigData object, as is output from the *methylSigReadData()* function in the **methylSig** package.  If your data is not in this format, please see the Appendix.   
 
 
-4: Finding DMRs with methdiffSatScan
+4: Finding DMRs with DMRscan
 ----------------------------------------------------------------------
 
 With data in a methylSigData object, the function *DMRscan()* can be used to find DMRs.  *DMRscan()* performs the following steps:
@@ -82,7 +82,7 @@ We start with a simple call to *DMRscan()* for the chromosome 18 data:
 
 ```{r, eval=FALSE}
 time0.a<-proc.time()
-result.a<-methdiffSatScan(CMML_chr18, xvalues = "Index")
+result.a<-DMRscan(CMML_chr18, xvalues = "Index")
 time1.a<-proc.time()
 
 ```
@@ -107,11 +107,11 @@ result.a$DMRs[,c(1:7, 11)]
 Note that the result is also automatically output to `result`; we output the result as a precaution due to the long computational time of *DMRscan()* on large datasets.  However, we recommend returning output to a more desciptive name as well, as `result` will be overwritten by subsequent calls to *DMRscan()*.
 
 
-If multiple chromosomes are present in the input `meth` object, *DMRscan()* will automatically analyze each chromsome separately.  For human data, the user can also split each chromsome at the centromere by setting `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets if system memory prevents the entire chromosome from being analyzed simulataneously.
+If multiple chromosomes are present in the input `meth` object, *DMRscan()* will automatically analyze each chromsome separately.  For human data, the user can also split each chromsome at the centromere by setting `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets if system memory prevents the entire chromosome from being analyzed simultaneously.
 
 ```{r, eval=FALSE}
 time0.b<-proc.time()
-result.b<-methdiffSatScan(CMML_chr18, xvalues = "Index", splitchr = TRUE, splitcentromere = TRUE, build = "hg18")
+result.b<-DMRscan(CMML_chr18, xvalues = "Index", splitchr = TRUE, splitcentromere = TRUE, build = "hg18")
 time1.b<-proc.time()
 
 ```
@@ -144,7 +144,7 @@ Plotting uses Gviz to plot the DMR along with an ideogram showing the position o
 plotSatScanresult(result.b) 
 ```
 
-For example the first region:
+For example:
 
 ```{r, include=FALSE}
 result.plot<-result.b
@@ -339,16 +339,24 @@ A methylSigData object can be created from CpG methylation score files using the
 In this example, we have previously downloaded all of the files from GSE into the working directory.
 
 First we check the format of one of the text files.  If your data is not currently in subject-wise text files, data can be rearranged and output to text files that have the following format:
+```{r, eval=FALSE, include=FALSE}
+setwd("H:/Methylation/Methods_comparison_GSE61161/data/")
+```
 
-```{r, eval=TRUE, include=FALSE}
-file<-read.table(fileList[1], header=TRUE)
-head(file)
+```{r, eval=FALSE, include=TRUE}
+fileList = dir()
+subj1data_chr18<-read.table(fileList[1], header=TRUE)
+```
+```{r, eval=FALSE, include=FALSE}
+subj1data_chr18<-testfile[which(testfile$chr=="chr18"),]
+```
+
+```{r, eval=TRUE, include=TRUE}
+head(subj1data_chr18)
 ```
 
 Now, read in the files with *methylSigReadData()*
 ```{r, eval=FALSE}
-fileList = dir(pattern="_myCpG.txt")
-fileList
 sample.id = substr(fileList, 1, 10)
 responder<-c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1)
 
