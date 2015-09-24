@@ -1,6 +1,6 @@
 ---
 title: "DMRscan Vignette"
-author: "Laura Helmkamp"
+author: "Laura Helmkamp and Robert Podolsky"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
@@ -13,13 +13,11 @@ vignette: >
 1: Introduction
 ----------------------------------------------------------------------
 
-DNA methylation plays critical roles in gene regulation and cellular specification without altering DNA
-sequences. It is one of the best understood and most intensively studied epigenetic marks in mammalian
-cells. Treatment of DNA with sodium bisulfite deaminates unmethylated cytosines to uracil while methylated cytosines are resistant to this conversion thus allowing for the discrimination between methylated and unmethylated CpG sites. Sodium bisulfite pre-treatment of DNA coupled with next-generation sequencing has allowed DNA methylation to be studied quantitatively and genome-wide at single cytosine site resolution. - change this; taken from MethylSig
+DNA methylation is a crucial and commonly studied epigenetic mechanism for the regulation of gene expression.  Differentially methylated regions (DMRs) have been implicated in a number of diseases, as well as in a variety of developmental and aging processes.    
 
-The **methdiffSatScan** package allows users to find differentially methylated regions (DMRs) using the scan statistic.  **methdiffSatScan** constitutes a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package **methylSig**,  the free scan statistic software **SaTScan** (via **RSaTScan**), and the plotting capabilities of Gviz [1,2,3,4].
+The **DMRscan** package allows users to accurately find DMRs using the scan statistic.  **DMRscan** constitues a convenient pipeline linking the sitewise likelihood-based differential methylation statistics calculated by the package **methylSig**,  the free scan statistic software **SaTScan** (via **RSaTScan**), and the plotting capabilities of Gviz [1,2,3,4].
 
-This document is a step-by-step user guide for the methdiffSatScan package.
+This document is a step-by-step user guide for the DMRscan package.
 
 
 
@@ -27,19 +25,19 @@ This document is a step-by-step user guide for the methdiffSatScan package.
 ----------------------------------------------------------------------
 
 
-### 2a: Installing methdiffSatScan ###
+### 2a: Installing DMRscan ###
 
-Install **methdiffSatScan** with the devtools R package:
+Install **DMRscan** with the devtools R package:
 
 ```{r, message=F, warning=F,  eval=FALSE}
 library(devtools) 
-install_github('lhelmkamp/methdiffSatScan')
+install_github('lhelmkamp/DMRscan')
 ```
 
 
 ### 2b: Installing SaTScan ###
 
-**methdiffSatScan** requires the stand-alone software **SaTScan**.  This can be easily downloaded from http://www.satscan.org/download.html for Windows, Linux, or Mac OS X.   
+**DMRscan** requires the stand-alone software **SaTScan**.  This can be easily downloaded from http://www.satscan.org/download.html for Windows, Linux, or Mac OS X.   
 
 
 
@@ -50,7 +48,7 @@ install_github('lhelmkamp/methdiffSatScan')
 As sample data, we use a small portion of the sample data publicly available on the GEO database under accession number GSE61161.  Data was obtained from 39 patients with chronic myelomonocytic leukemia (CMML), and we are interested in locating regions which could predict response to a commonly used treatment.  Data for chromosome 18 is provided with the package. 
 
 ```{r, message=F, warning=F}
-library(methdiffSatScan) 
+library(DMRscan) 
 
 ```
 
@@ -66,20 +64,20 @@ CMML_chr18[,1:5]
 ```
 
 
-**methdiffSatScan** requires that input data be formatted as methylSigData object, as is output from the methylSigReadData() function in the methylSig package.  If your data is not in this format, please see the Appendix.   
+**DMRscan** requires that input data be formatted as methylSigData object, as is output from the *methylSigReadData()* function in the **methylSig** package.  If your data is not in this format, please see the Appendix.   
 
 
 4: Finding DMRs with methdiffSatScan
 ----------------------------------------------------------------------
 
-With data in a methylSigData object, the function **methdiffSatScan()** can be used to find DMRs.  methdiffSatScan performs the following steps:
+With data in a methylSigData object, the function *DMRscan()* can be used to find DMRs.  *DMRscan()* performs the following steps:
 
 1. Obtain sitewise likelihood ratio statistics
 2. Normalize the sitewise statistics using quantiles
 3. Write the files needed by SatScan to a local directory 
 4. Run SatScan and view the results
 
-We start with a simple call to **methdiffSatScan()** for the chromosome 18 data:
+We start with a simple call to *DMRscan()* for the chromosome 18 data:
 
 
 ```{r, eval=FALSE}
@@ -89,13 +87,13 @@ time1.a<-proc.time()
 
 ```
 
-Here, `xvalues = "Index"` indicates that in the scan statistic, the data points will be treated as equally spaced rather than using the position of the site on the chromosome.  We include timing code to allow the user to compare computational speed:
+Here, `xvalues = "Index"` indicates that in the scan statistic, the data points will be treated as equally spaced rather than using the position of the site on the chromosome.  We include timing code to allow the user to estimate computational time:
 
 ```{r, message=T, warning=F}
 (time1.a-time0.a)/60
 ```
 
-On our computer, where chromosome 18 takes about 13 minutes, analyzing the entire genome-wide dataset for the CMML data takes about 16 hours.
+On our computer, where this test of chromosome 18 takes about 13 minutes, analyzing the entire genome-wide dataset for the CMML data takes about 16 hours.
 
 The output `result.a` is a list, the first element of which contains the significant DMRs:
 
@@ -106,10 +104,10 @@ result.a$DMRs
 result.a$DMRs[,c(1:7, 11)]
 ```
 
-Note that the result is also automatically output to `result`; we output the result as a precaution due to the long computational time of **methdiffSatScan** on large datasets.  However, we recommend returning output to a more desciptive name as well, as `result` will be overwritten by subsequent calls to **methdiffSatScan**.
+Note that the result is also automatically output to `result`; we output the result as a precaution due to the long computational time of *DMRscan()* on large datasets.  However, we recommend returning output to a more desciptive name as well, as `result` will be overwritten by subsequent calls to *DMRscan()*.
 
 
-If multiple chromosomes are present in the input `meth` object, **methdiffSatScan** will automatically analyze each chromsome separately.  For human data, the user can also split each chromsome at the centromere with `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets depending on system memory.
+If multiple chromosomes are present in the input `meth` object, *DMRscan()* will automatically analyze each chromsome separately.  For human data, the user can also split each chromsome at the centromere by setting `splitcentromere = TRUE` and by specifying `build` from `"hg18"`, `"hg19"`, or `"hg38"`. This will speed up the analysis somewhat, and may be necesary for large datasets if system memory prevents the entire chromosome from being analyzed simulataneously.
 
 ```{r, eval=FALSE}
 time0.b<-proc.time()
@@ -336,3 +334,29 @@ References
 Appendix: Creating a methylSigData object
 ----------------------------------------------------------------------
 
+A methylSigData object can be created from CpG methylation score files using the *methylSigReadData()* function in the **methylSig** package.  For a full description of the package and function options, see http://sartorlab.ccmb.med.umich.edu/software.  We will include a brief example here for simplicity.
+
+In this example, we have previously downloaded all of the files from GSE into the working directory.
+
+First we check the format of one of the text files.  If your data is not currently in subject-wise text files, data can be rearranged and output to text files that have the following format:
+
+```{r, eval=TRUE, include=FALSE}
+file<-read.table(fileList[1], header=TRUE)
+head(file)
+```
+
+Now, read in the files with *methylSigReadData()*
+```{r, eval=FALSE}
+fileList = dir(pattern="_myCpG.txt")
+fileList
+sample.id = substr(fileList, 1, 10)
+responder<-c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1)
+
+#### Read Data ####
+memory.limit(25000)
+meth <- methylSigReadData(fileList, sample.ids = sample.id, assembly = "hg18", treatment = responder, context = "CpG", destranded=TRUE)
+
+```
+
+
+You are now ready to run DMRscan!
