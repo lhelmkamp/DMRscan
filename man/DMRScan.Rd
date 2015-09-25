@@ -5,8 +5,7 @@
 \title{Find differentially methylated regions using the scan statistic.}
 \usage{
 DMRscan(meth, mydir = NULL, xvalues = "Position", splitcentromere = FALSE,
-  build = c("hg18", "hg19", "hg38"), smallestregion = 4,
-  plotresult = FALSE, ...)
+  build = NULL, smallestregion = 4, plotresult = FALSE, ...)
 }
 \arguments{
 \item{meth}{input data, a  methylSigData object.}

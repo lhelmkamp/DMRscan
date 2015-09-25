@@ -21,7 +21,7 @@
 
 
 
-DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE, build=c("hg18", "hg19", "hg38"), smallestregion=4, plotresult=FALSE, ... ){
+DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE, build=NULL, smallestregion=4, plotresult=FALSE, ... ){
   
   library("rsatscan")
   library(methylSig)
@@ -39,13 +39,16 @@ DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE,
   dir.create(paste(mydir, "/DMRScan_tmp", sep=""), showWarnings = TRUE, recursive = FALSE, mode = "0777")
   tmpdir<-paste(mydir, "/DMRScan_tmp", sep="")
   
-
+  
   ##################### 1: splitting on centromere.
   #####################if we want to split by chromosome, see which chromosomes are present in the data
   if( splitcentromere==TRUE){
     
     
     ##################### if we want to split at centromere, read in centromeres for proper build
+    # try to get build from methylSigData object if it's not specified. 
+    if (is.null(build)){build<-substr(gsub("^.*?assembly=","",meth@options), 1, 4)}
+    
     if (build %in% c("hg18", "hg19", "hg38")){
       library(GWASTools)
       if (build=="hg18"){
@@ -74,19 +77,10 @@ DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE,
     
     # can't split by centromere if chromosomes are bad...
     badchrs<-setdiff( mychrindlist , c(paste("chr",1:22, sep=""),"chrX", "chrY") )
-    if (length(badchrs)>0){
-      stop(paste("Cannot split at the centromere for chromosome(s):\n",badchrs, ". \n  Please specify a chromosme as chr1, etc, or do not split by centromere."))
-      
-    }
+    goodchrs<-intersect(mychrlistorder, c(paste("chr",1:22, sep="")) )
     
-    if (length(mychrlistorder)==length(mychrindlist)){
-      mychrlistfinal<-mychrlistorder
-    } else {
-      mychrlistfinal<-mychrindlist
-    }
-    
-    for (i in 1:length(mychrlistfinal)){
-      mychr<-mychrlistfinal[i]
+    for (i in 1:length(goodchrs)){
+      mychr<-goodchrs[i]
       chrnum<-gsub("chr", "", mychr)
       centromere.start<-centromeres[which(centromeres$chrom==chrnum),"left.base"]
       centromere.end<-centromeres[which(centromeres$chrom==chrnum),"right.base"]
@@ -126,7 +120,27 @@ DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE,
     
     
     
-  } # end centromere and chr
+    
+    for (i in 1:length(badchrs)){
+      mychr<-badchrs[i]
+      chrnum<-gsub("chr", "", mychr)
+      meth_chr<-meth[which(meth@data.chr==mychr),]
+      
+      cat("\n\n\n Now on",mychr,"\n\n\n" )
+      
+      result<-SatScanrun(meth=meth_chr, xvalues=xvalues, smallestregion=smallestregion, dir=tmpdir)
+      foundchr<-result$resultmat
+      loglikchr<-result$logliks
+      found<-rbind(found, foundchr)
+      loglik<-rbind(loglik, loglikchr)
+      
+    } # end chrom (not in 1-22, X, Y)
+    
+    
+    
+  } # end splitting at centromere
+  
+  
   
   
   ##################### 2: not splitting on centromere.
@@ -159,11 +173,11 @@ DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE,
       found<-rbind(found, foundchr)
       
     } # end chr
-
+    
     
   } # end chr, no centromere
   
-
+  
   
   # remove the directory too
   unlink(tmpdir,recursive = TRUE , force = TRUE)
@@ -180,7 +194,7 @@ DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE,
     try(plotSatScanresult(result))
   }
   
- return(result)
+  return(result)
 }
 
 

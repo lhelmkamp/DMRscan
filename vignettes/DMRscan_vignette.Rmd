@@ -338,7 +338,14 @@ A methylSigData object can be created from CpG methylation score files using the
 
 In this example, we have previously downloaded all of the files from GSE into the working directory.
 
-First we check the format of one of the text files.  If your data is not currently in subject-wise text files, data can be rearranged and output to text files that have the following format:
+First we check the format of one of the text files.  If your data is not currently in subject-wise text files, data can be rearranged and output to text files that have the correct format.  From the MethylSig vignette:
+
+>The CpG methylation score file must contain at least seven columns. Among these, second to seventh
+>column must be, in order, chromosome, base, strand, coverage, percentage of Cs and percentage of Ts.
+>Column names are not important. Strand format is F/R or +/-, where F/+ represents forward and R/-
+>represents reverse strand.
+
+
 ```{r, eval=FALSE, include=FALSE}
 setwd("H:/Methylation/Methods_comparison_GSE61161/data/")
 ```
