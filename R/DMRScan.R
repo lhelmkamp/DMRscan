@@ -21,7 +21,7 @@
 
 
 
-DMRScan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE, build=c("hg18", "hg19", "hg38"), smallestregion=4, plotresult=FALSE, ... ){
+DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE, build=c("hg18", "hg19", "hg38"), smallestregion=4, plotresult=FALSE, ... ){
   
   library("rsatscan")
   library(methylSig)
