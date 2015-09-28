@@ -47,7 +47,7 @@ DMRscan <- function(meth, mydir=NULL, xvalues="Position", splitcentromere=FALSE,
     
     ##################### if we want to split at centromere, read in centromeres for proper build
     # try to get build from methylSigData object if it's not specified. 
-    if (is.null(build)){build<-substr(gsub("^.*?assembly=","",meth@options), 1, 4)}
+    if (is.null(build)){build<-substr(gsub("^.*?assembly=","",meth@options), 1, 4)} # this returns the first for char of the options string if no assembly is specified (eg "maxC" from maxCount=500); okay
     
     if (build %in% c("hg18", "hg19", "hg38")){
       library(GWASTools)

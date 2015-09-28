@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotSatScanresult.R
 \name{plotSatScanresult}
 \alias{plotSatScanresult}
-\title{Plot the results of methdiffSatScan}
+\title{Plot the results of DMRscan}
 \usage{
 plotSatScanresult(result, plottopn = NULL, plotpval = NULL,
   plotfilename = NULL)
 }
 \arguments{
-\item{result}{is the result of running methdiffSatScan- a list containing a vector of likelihood values for each point, the DMRs which were found with p-value <0.05, the build, and the directory to which we want to write a pdf.}
+\item{result}{is the result of running DMRscan- a list containing a vector of likelihood values for each point, the DMRs which were found with p-value <0.05, the build, and the directory to which we want to write a pdf.}
 
 \item{plottopn}{allows for the plotting of only the top n results by p-value, in case of a large number of identified DMRs.}
 
@@ -20,12 +20,12 @@ plotSatScanresult(result, plottopn = NULL, plotpval = NULL,
 nothing; results are output to pdf.
 }
 \description{
-Plot the results of methdiffSatScan
+Plot the results of DMRscan
 }
 \examples{
 plotSatScanresult(result)
 }
 \seealso{
-\code{\link{methdiffSatScan}} which wraps this function
+\code{\link{DMRscan}} which wraps this function
 }
 

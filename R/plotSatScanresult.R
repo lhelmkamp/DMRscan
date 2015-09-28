@@ -1,13 +1,13 @@
 
 
-#' Plot the results of methdiffSatScan
+#' Plot the results of DMRscan
 #'
-#' @param result is the result of running methdiffSatScan- a list containing a vector of likelihood values for each point, the DMRs which were found with p-value <0.05, the build, and the directory to which we want to write a pdf.
+#' @param result is the result of running DMRscan- a list containing a vector of likelihood values for each point, the DMRs which were found with p-value <0.05, the build, and the directory to which we want to write a pdf.
 #' @param plottopn allows for the plotting of only the top n results by p-value, in case of a large number of identified DMRs.
 #' @param plotpval allows for plotting of only DMRs with a p-value less than a given value (e.g. 0.001), in case of a large nunmber of identified DMRs.
 #' @param plotfilename is the name of the pdf file which will be output to the directory listed in result$dir.
 #' @return nothing; results are output to pdf.  
-#' @seealso \code{\link{methdiffSatScan}} which wraps this function 
+#' @seealso \code{\link{DMRscan}} which wraps this function 
 #' @export
 #' @examples
 #' plotSatScanresult(result)
@@ -83,14 +83,14 @@ plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL, plotfilename=N
   mychrindlist<-rownames(table(RSatScanDMRs.order$chr)) # this is not in order (1, 10, 11,...) instead of (1,2,..)
   mychrlistorder<-intersect(c(paste("chr",1:22, sep=""),"chrX", "chrY"), mychrindlist )
   
-  if (is.null(plotfilename)){plotfilename<-"methdiffSatScan_plot.pdf"}
+  if (is.null(plotfilename)){plotfilename<-"DMRscan_plot.pdf"}
   if (substr(plotfilename,(nchar(plotfilename)+1)-4,nchar(plotfilename))==".pdf") {
     plotfilename.pdf<-plotfilename
   } else {plotfilename.pdf<-paste(plotfilename, ".pdf", sep="")}
 
   pdf(file = paste(dir, plotfilename.pdf , sep="/"))
-  
-  DMRcount<-0
+
+    DMRcount<-0
   for (i in 1:length(mychrlistorder)){
     mychr<-mychrlistorder[i]
     chrDMRs<-which(RSatScanDMRs.order$chr==mychr)
@@ -222,7 +222,7 @@ plotSatScanresult<-function(result, plottopn=NULL, plotpval=NULL, plotfilename=N
   
   dev.off()
   
+  cat("\n\n\n\n\n\n plots have been output to pdf at", paste(dir, plotfilename.pdf , sep="/") )
+  
 } # end function
 
-#save(failtracks, file="H:/Methylation/Methods_comparison/methdiffSatScan_testing_code/failtracks.RData")
-#save(succeedtracks, file="H:/Methylation/Methods_comparison/methdiffSatScan_testing_code/succeedtracks.RData")

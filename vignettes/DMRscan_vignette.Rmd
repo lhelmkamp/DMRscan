@@ -25,7 +25,13 @@ This document is a step-by-step user guide for the DMRscan package.
 ----------------------------------------------------------------------
 
 
-### 2a: Installing DMRscan ###
+### 2a: Installing SaTScan ###
+
+**DMRscan** requires the stand-alone software **SaTScan**.  This can be easily downloaded from http://www.satscan.org/download.html for Windows, Linux, or Mac OS X.   
+
+
+
+### 2b: Installing DMRscan ###
 
 Install **DMRscan** with the devtools R package:
 
@@ -33,11 +39,6 @@ Install **DMRscan** with the devtools R package:
 library(devtools) 
 install_github('lhelmkamp/DMRscan')
 ```
-
-
-### 2b: Installing SaTScan ###
-
-**DMRscan** requires the stand-alone software **SaTScan**.  This can be easily downloaded from http://www.satscan.org/download.html for Windows, Linux, or Mac OS X.   
 
 
 
@@ -111,7 +112,7 @@ If multiple chromosomes are present in the input `meth` object, *DMRscan()* will
 
 ```{r, eval=FALSE}
 time0.b<-proc.time()
-result.b<-DMRscan(CMML_chr18, xvalues = "Index", splitchr = TRUE, splitcentromere = TRUE, build = "hg18")
+result.b<-DMRscan(CMML_chr18, xvalues = "Index", splitcentromere = TRUE, build = "hg18")
 time1.b<-proc.time()
 
 ```
@@ -324,9 +325,11 @@ References
 
 2. Kulldorff, M. SaTScan: Software for the spatial and space-time scan statistics. http://www.satscan.org/
 
-3. RSatScan
+3. Ken Kleinman (2015). rsatscan: Tools, Classes, and Methods for Interfacing with SaTScan Stand-Alone Software. R package version 0.3.9200.
+   http://CRAN.R-project.org/package=rsatscan
 
-4. Gviz
+4. Florian Hahne, Steffen Durinck, Robert Ivanek, Arne Mueller, Steve Lianoglou, Ge Tan and Lance Parsons (). Gviz: Plotting data and annotation information along genomic
+   coordinates. R package version 1.12.1.
 
 
 
